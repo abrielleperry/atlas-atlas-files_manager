@@ -1,8 +1,12 @@
-const RedisClient = require('./redis')
+const Redis = require('ioredis')
 
-class RedisClient
+class RedisClient {
+
+}
 
 on('error')
 
 isAlive
 
+const RedisClient = new RedisClient();
+module.exports = { RedisClient };
