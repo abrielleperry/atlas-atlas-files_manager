@@ -7,6 +7,9 @@ class RedisClient {
       console.error('Redis client error:' err);
     })
   }
+  isAlive() {
+    return this.client.ping().then((pong) => pong === 'PONG');
+  }
 }
 
 module.exports = { RedisClient, redisClient };
