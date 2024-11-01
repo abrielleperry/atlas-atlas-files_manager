@@ -1,1 +1,1 @@
-
+const Redis = require('ioredis')
