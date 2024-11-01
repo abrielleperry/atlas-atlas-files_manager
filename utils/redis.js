@@ -2,14 +2,19 @@ const Redis = require('redis');
 
 class RedisClient {
   constructor() {
-    this.client = new Redis();
+    this.client = Redis.createClient();
     this.client.on('error', (err) => {
       console.error('Redis client error:', err);
     });
   }
 
-  isAlive() {
-    return this.client.ping().then((pong) => pong === 'PONG');
+  async isAlive() {
+    try {
+      const pong = await this.client.ping();
+      return pong === 'PONG';
+    } catch (error) {
+      return false;
+    }
   }
 
   async get(key) {
