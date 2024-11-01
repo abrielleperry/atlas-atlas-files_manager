@@ -4,6 +4,10 @@ class RedisClient {
   constructor() {
     this.client = redis.createClient();
 
+    this.client.on('connect', () => {
+      console.log('Redis client Connected');
+    });
+
     this.client.on('error', (error) => {
       console.error('Redis client error:', error);
     });
@@ -20,7 +24,7 @@ class RedisClient {
           console.error(`Error getting key ${key}:`, err);
           return reject(err);
         }
-        resolve(value);
+        return resolve(value);
       });
     });
   }
@@ -32,7 +36,7 @@ class RedisClient {
           console.error(`Error setting key ${key}:`, err);
           return reject(err);
         }
-        resolve();
+        return resolve();
       });
     });
   }
@@ -44,7 +48,7 @@ class RedisClient {
           console.error(`Error deleting key ${key}:`, err);
           return reject(err);
         }
-        resolve();
+        return resolve();
       });
     });
   }
