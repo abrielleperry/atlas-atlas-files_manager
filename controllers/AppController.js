@@ -4,11 +4,10 @@ import dbClient from '../utils/db';
 
 const router = express.Router();
 
-
 router.get('/status', async (req, res) => {
   try {
     const redisAlive = redisClient.isAlive();
-    const dbAlive = await dbClient.isConnected();
+    const dbAlive = await dbClient.checkConnection();
 
     res.status(200).json({ redis: redisAlive, db: dbAlive });
   } catch (error) {
@@ -20,8 +19,8 @@ router.get('/status', async (req, res) => {
 // GET /stats endpoint
 router.get('/stats', async (req, res) => {
   try {
-    const usersCount = await dbClient.countDocuments('users');  // Assuming a countDocuments method
-    const filesCount = await dbClient.countDocuments('files');  // Assuming a countDocuments method
+    const usersCount = await dbClient.nbUsers();
+    const filesCount = await dbClient.nbFiles();
 
     res.status(200).json({ users: usersCount, files: filesCount });
   } catch (error) {
