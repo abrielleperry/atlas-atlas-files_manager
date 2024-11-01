@@ -10,6 +10,15 @@ class RedisClient {
   isAlive() {
     return this.client.ping().then((pong) => pong === 'PONG');
   }
+  async this.get(key) {
+    try {
+      return await this.client.get(key);
+    } catch (error) {
+      console.error('Error getting value:' error)
+      return null;
+    }
+  }
+
 }
 
 module.exports = { RedisClient, redisClient };
