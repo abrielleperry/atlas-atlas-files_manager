@@ -30,7 +30,7 @@ class DBClient {
   }
 
   async checkConnection() {
-    return !!this.db;
+    return this.db ? true : false;
   }
 
   async nbUsers() {
