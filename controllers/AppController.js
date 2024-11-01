@@ -4,11 +4,10 @@ import dbClient from '../utils/db';
 
 const router = express.Router();
 
-
 router.get('/status', async (req, res) => {
   try {
     const redisAlive = redisClient.isAlive();
-    const dbAlive = await dbClient.isConnected();
+    const dbAlive = await dbClient.checkConnection();
 
     res.status(200).json({ redis: redisAlive, db: dbAlive });
   } catch (error) {

@@ -29,6 +29,10 @@ class DBClient {
     return this.client.isConnected();
   }
 
+  async checkConnection() {
+    return this.db ? true : false;
+  }
+
   async nbUsers() {
     if (!this.db) {
       throw new Error('Database not initialized. Please ensure you are connected to MongoDB.');
@@ -56,6 +60,5 @@ class DBClient {
   }
 }
 
-// Create and export an instance of DBClient
 const dbClient = new DBClient();
 export default dbClient;
