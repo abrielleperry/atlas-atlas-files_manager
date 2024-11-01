@@ -19,8 +19,8 @@ router.get('/status', async (req, res) => {
 // GET /stats endpoint
 router.get('/stats', async (req, res) => {
   try {
-    const usersCount = await dbClient.countDocuments('users');  // Assuming a countDocuments method
-    const filesCount = await dbClient.countDocuments('files');  // Assuming a countDocuments method
+    const usersCount = await dbClient.nbUsers();
+    const filesCount = await dbClient.nbFiles();
 
     res.status(200).json({ users: usersCount, files: filesCount });
   } catch (error) {
