@@ -18,7 +18,13 @@ class RedisClient {
       return null;
     }
   }
-
+  async set(key, value, durationInSeconds) {
+    try {
+      await this.client.setex(key, durationInSeconds, value)
+    } catch (error) {
+      console.error('Error setting value:', error)
+    }
+  }
 }
 
 module.exports = { RedisClient, redisClient };
