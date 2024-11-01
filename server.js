@@ -9,10 +9,10 @@ app.use(express.json());
 app.use('/', routes);
 
 app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).json({ error: 'Internal Server Error' });
+  console.error(err.stack);
+  res.status(500).json({ error: 'Internal Server Error' });
 });
 
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
