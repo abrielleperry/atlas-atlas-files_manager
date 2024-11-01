@@ -1,12 +1,8 @@
 import express from 'express';
-import AppController from '../controllers/AppController'; // Adjust the path as needed
+import AppController from '../controllers/AppController';
 
 const router = express.Router();
 
-// Define the /status endpoint
-router.get('/status', AppController.getStatus);
-
-// Define the /stats endpoint
-router.get('/stats', AppController.getStats);
+router.use(AppController);
 
 export default router;
