@@ -25,6 +25,13 @@ class RedisClient {
       console.error('Error setting value:', error)
     }
   }
+  async del(key) {
+    try {
+      await this.client.del(key)
+    } catch (error) {
+      console.error('Error deleting key:', error)
+    }
+  }
 }
 
 module.exports = { RedisClient, redisClient };
