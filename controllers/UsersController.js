@@ -7,3 +7,5 @@ const uri = ''
 const client = new MongoClient(uri);
 
 client.connect();
+
+module.exports = router;
