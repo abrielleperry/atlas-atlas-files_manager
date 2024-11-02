@@ -42,7 +42,7 @@ class UserController {
       // decode token
       const decodedToken = jwt.decode(token);
       if (!decodedToken || !decodedToken.id) {
-        return res.status(401).json({ error: 'Invalid token '});
+        return res.status(401).json({ error: 'Invalid token' });
       }
       // find usr in db using decoded id
       const usersCollection = dbClient.db.collection('users');
