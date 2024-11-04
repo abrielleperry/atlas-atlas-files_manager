@@ -76,7 +76,7 @@ class FilesController {
       ...newFile,
     };
     delete response._id;
-    delete response.localPath; // Exclude localPath from the response
+    delete response.localPath;
     return res.status(201).json(response);
   }
 }
