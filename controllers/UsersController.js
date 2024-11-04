@@ -1,5 +1,7 @@
 import crypto from 'crypto';
 import dbClient from '../utils/db';
+import redisClient from '../utils/redis';
+import { ObjectId } from 'mongodb';
 
 class UserController {
   static async postNew(req, res) {
@@ -34,23 +36,22 @@ class UserController {
 
   static async getMe(req, res) {
     try {
-      // get token from req headersss
-      const token = req.headers['authorization'];
+      const token = req.headers['x-token'];
       if (!token) {
         return res.status(401).json({ error: 'Unauthorized' });
       }
-      // decode token
-      const decodedToken = jwt.decode(token);
-      if (!decodedToken || !decodedToken.id) {
-        return res.status(401).json({ error: 'Invalid token' });
+
+      const userId = await redisClient.get(`auth_${token}`);
+      if (!userId) {
+        return res.status(401).json({ error: 'Unauthorized' });
       }
-      // find usr in db using decoded id
+
       const usersCollection = dbClient.db.collection('users');
-      const user = await usersCollection.findOne({ _id: decodedToken.id });
+      const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
       if (!user) {
         return res.status(404).json({ error: 'User not found' });
       }
-      // return only email & id
+
       const userData = {
         email: user.email,
         id: user._id.toString()

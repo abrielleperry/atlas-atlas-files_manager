@@ -7,6 +7,14 @@ const router = express.Router();
 
 router.use(AppController);
 
+router.get('/status', (req, res) => {
+  AppController.getStatus(req, res);
+});
+
+router.get('/stats', (req, res) => {
+  AppController.getStats(res, req);
+});
+
 router.post('/users', UserController.postNew);
 
 router.get('/connect', AuthController.getConnect);
