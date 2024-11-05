@@ -134,10 +134,8 @@ class FilesController {
     const page = parseInt(req.query.page, 10) || 0;
     const pageSize = 20;
 
-    // Fetch files including nested contents
     const allFiles = await FilesController.fetchFilesRecursive(userId, parentId);
 
-    // Apply pagination at the top level
     const paginatedFiles = allFiles.slice(page * pageSize, (page + 1) * pageSize);
 
     const response = paginatedFiles.map((file) => ({
