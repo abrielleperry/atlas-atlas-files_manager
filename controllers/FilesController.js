@@ -168,6 +168,7 @@ class FilesController {
 
     return result;
   }
+
   static async putPublish(req, res) {
     try {
       const token = req.headers['x-token'];
@@ -187,13 +188,11 @@ class FilesController {
 
       if (!fileDocument) return res.status(404).json({ error: 'Not found' });
 
-   
       await dbClient.db.collection('files').updateOne(
         { _id: ObjectId(fileId) },
         { $set: { isPublic: true } }
       );
 
-  
       const updatedFile = { ...fileDocument, isPublic: true };
       return res.status(200).json(updatedFile);
     } catch (error) {
@@ -221,13 +220,11 @@ class FilesController {
 
       if (!fileDocument) return res.status(404).json({ error: 'Not found' });
 
-
       await dbClient.db.collection('files').updateOne(
         { _id: ObjectId(fileId) },
-        { $set: { isPublic: false } }
+        { $set: { isPublic: false } },
       );
 
-      // Return the updated file document
       const updatedFile = { ...fileDocument, isPublic: false };
       return res.status(200).json(updatedFile);
     } catch (error) {
@@ -236,6 +233,6 @@ class FilesController {
     }
   }
 
-}
+};
 
 export default FilesController;
