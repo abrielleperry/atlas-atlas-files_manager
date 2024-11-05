@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import dbClient from '../utils/db';
 import redisClient from '../utils/redis';
+import { ObjectId } from 'mongodb';
 
 class FilesController {
   static async postUpload(req, res) {
@@ -31,7 +32,7 @@ class FilesController {
     }
 
     if (parentId !== 0) {
-      const parentFile = await dbClient.db.collection('files').findOne({ _id: parentId });
+      const parentFile = await dbClient.db.collection('files').findOne({ _id: ObjectId(parentId) });
       if (!parentFile) {
         return res.status(400).json({ error: 'Parent not found' });
       }
