@@ -80,6 +80,97 @@ class FilesController {
     delete response.localPath;
     return res.status(201).json(response);
   }
+
+  static async getShow(req, res) {
+    const token = req.headers['x-token'];
+    if (!token) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const userId = await redisClient.get(`auth_${token}`);
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const { id } = req.params;
+
+    let fileDocument;
+    try {
+      fileDocument = await dbClient.db.collection('files').findOne({
+        _id: ObjectId(id),
+        userId,
+      });
+    } catch (error) {
+      return res.status(404).json({ error: 'Not found' });
+    }
+
+    if (!fileDocument) {
+      return res.status(404).json({ error: 'Not found' });
+    }
+
+    const response = {
+      id: fileDocument._id,
+      userId: fileDocument.userId,
+      name: fileDocument.name,
+      type: fileDocument.type,
+      isPublic: fileDocument.isPublic,
+      parentId: fileDocument.parentId,
+    };
+    return res.status(200).json(response);
+  }
+
+  static async getIndex(req, res) {
+    const token = req.headers['x-token'];
+    if (!token) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const userId = await redisClient.get(`auth_${token}`);
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const parentId = req.query.parentId || '0';
+    const page = parseInt(req.query.page, 10) || 0;
+    const pageSize = 20;
+
+    // Fetch files including nested contents
+    const allFiles = await FilesController.fetchFilesRecursive(userId, parentId);
+
+    // Apply pagination at the top level
+    const paginatedFiles = allFiles.slice(page * pageSize, (page + 1) * pageSize);
+
+    const response = paginatedFiles.map((file) => ({
+      id: file._id,
+      userId: file.userId,
+      name: file.name,
+      type: file.type,
+      isPublic: file.isPublic,
+      parentId: file.parentId,
+    }));
+
+    return res.status(200).json(response);
+  }
+
+  static async fetchFilesRecursive(userId, parentId, result = []) {
+    console.log(`Fetching files for parentId: ${parentId}`);
+    const query = { userId, parentId: parentId === '0' ? 0 : ObjectId(parentId) };
+    const files = await dbClient.db.collection('files').find(query).toArray();
+
+    console.log(`Found ${files.length} files for parentId: ${parentId}`);
+
+    for (const file of files) {
+      console.log(`Processing file: ${file.name} (type: ${file.type})`);
+      result.push(file);
+
+      if (file.type === 'folder') {
+        // Recursively fetch contents of the folder
+        await FilesController.fetchFilesRecursive(userId, file._id, result);
+      }
+    }
+
+    return result;
+  }
 }
 
 export default FilesController;
