@@ -162,7 +162,6 @@ class FilesController {
       result.push(file);
 
       if (file.type === 'folder') {
-        // Recursively fetch contents of the folder
         await FilesController.fetchFilesRecursive(userId, file._id, result);
       }
     }
