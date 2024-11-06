@@ -1,3 +1,4 @@
+import Queue from 'bull';
 import { v4 as uuidv4 } from 'uuid';
 import fs from 'fs';
 import path from 'path';
@@ -5,6 +6,9 @@ import mime from 'mime-types';
 import { ObjectId } from 'mongodb';
 import dbClient from '../utils/db';
 import redisClient from '../utils/redis';
+
+
+const fileQueue = new Queue('fileQueue');  // Initialize fileQueue at the top
 
 class FilesController {
   static async postUpload(req, res) {
@@ -50,6 +54,7 @@ class FilesController {
       parentId,
     };
 
+    // Handle folder creation
     if (type === 'folder') {
       const result = await dbClient.db.collection('files').insertOne(fileDocument);
       const newFile = result.ops[0];
@@ -61,6 +66,7 @@ class FilesController {
       return res.status(201).json(response);
     }
 
+    // Handle file storage
     const folderPath = process.env.FOLDER_PATH || '/tmp/files_manager';
     if (!fs.existsSync(folderPath)) {
       fs.mkdirSync(folderPath, { recursive: true });
@@ -73,6 +79,12 @@ class FilesController {
 
     const result = await dbClient.db.collection('files').insertOne(fileDocument);
     const newFile = result.ops[0];
+    
+    // If the file type is image, add a job to the fileQueue
+    if (type === 'image') {
+      fileQueue.add({ userId, fileId: newFile._id.toString() });
+    }
+
     const response = {
       id: newFile._id,
       ...newFile,
