@@ -183,14 +183,14 @@ class FilesController {
 
       const fileDocument = await dbClient.db.collection('files').findOne({
         _id: ObjectId(fileId),
-        userId: userId,
+        userId,
       });
 
       if (!fileDocument) return res.status(404).json({ error: 'Not found' });
 
       await dbClient.db.collection('files').updateOne(
         { _id: ObjectId(fileId) },
-        { $set: { isPublic: true } }
+        { $set: { isPublic: true } },
       );
 
       const updatedFile = { ...fileDocument, isPublic: true };
@@ -215,7 +215,7 @@ class FilesController {
 
       const fileDocument = await dbClient.db.collection('files').findOne({
         _id: ObjectId(fileId),
-        userId: userId,
+        userId,
       });
 
       if (!fileDocument) return res.status(404).json({ error: 'Not found' });
@@ -232,7 +232,6 @@ class FilesController {
       return res.status(500).json({ error: 'Internal server error' });
     }
   }
-
-};
+}
 
 export default FilesController;
