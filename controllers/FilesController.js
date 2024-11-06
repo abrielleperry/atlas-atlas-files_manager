@@ -1,12 +1,10 @@
 import { v4 as uuidv4 } from 'uuid';
 import fs from 'fs';
 import path from 'path';
+import mime from 'mime-types';
+import { ObjectId } from 'mongodb';
 import dbClient from '../utils/db';
 import redisClient from '../utils/redis';
-import { ObjectId } from 'mongodb';
-import mime from 'mime-types';
-
-
 
 class FilesController {
   static async postUpload(req, res) {
@@ -120,9 +118,7 @@ class FilesController {
       parentId: fileDocument.parentId,
     };
     return res.status(200).json(response);
-
   }
-    
 
   static async getIndex(req, res) {
     const token = req.headers['x-token'];
@@ -199,7 +195,7 @@ class FilesController {
       );
 
       const updatedFile = { ...fileDocument, isPublic: true };
-      delete updatedFile.localPath; 
+      delete updatedFile.localPath;
       return res.status(200).json(updatedFile);
     } catch (error) {
       console.error(error);
@@ -232,15 +228,15 @@ class FilesController {
       );
 
       const updatedFile = { ...fileDocument, isPublic: false };
-      delete updatedFile.localPath; 
+      delete updatedFile.localPath;
       return res.status(200).json(updatedFile);
     } catch (error) {
       console.error(error);
       return res.status(500).json({ error: 'Internal server error' });
     }
-}
+  }
 
-    static async getFile(req, res) {
+  static async getFile(req, res) {
     try {
       const fileId = req.params.id;
       const token = req.headers['x-token'];
@@ -273,8 +269,6 @@ class FilesController {
       return res.status(500).json({ error: 'Internal server error' });
     }
   }
-    
 }
-
 
 export default FilesController;
