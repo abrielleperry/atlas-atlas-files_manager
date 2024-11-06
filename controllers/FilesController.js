@@ -4,6 +4,9 @@ import path from 'path';
 import dbClient from '../utils/db';
 import redisClient from '../utils/redis';
 import { ObjectId } from 'mongodb';
+import mime from 'mime-types';
+
+
 
 class FilesController {
   static async postUpload(req, res) {
@@ -117,7 +120,9 @@ class FilesController {
       parentId: fileDocument.parentId,
     };
     return res.status(200).json(response);
+
   }
+    
 
   static async getIndex(req, res) {
     const token = req.headers['x-token'];
@@ -194,6 +199,7 @@ class FilesController {
       );
 
       const updatedFile = { ...fileDocument, isPublic: true };
+      delete updatedFile.localPath; 
       return res.status(200).json(updatedFile);
     } catch (error) {
       console.error(error);
@@ -226,12 +232,49 @@ class FilesController {
       );
 
       const updatedFile = { ...fileDocument, isPublic: false };
+      delete updatedFile.localPath; 
       return res.status(200).json(updatedFile);
     } catch (error) {
       console.error(error);
       return res.status(500).json({ error: 'Internal server error' });
     }
-  }
 }
+
+    static async getFile(req, res) {
+    try {
+      const fileId = req.params.id;
+      const token = req.headers['x-token'];
+
+      if (!ObjectId.isValid(fileId)) return res.status(404).json({ error: 'Not found' });
+
+      const fileDocument = await dbClient.db.collection('files').findOne({ _id: ObjectId(fileId) });
+      if (!fileDocument) return res.status(404).json({ error: 'Not found' });
+
+      const isAuthenticated = token ? (await redisClient.get(`auth_${token}`)) === fileDocument.userId.toString() : false;
+      if (!fileDocument.isPublic && !isAuthenticated) return res.status(404).json({ error: 'Not found' });
+
+      if (fileDocument.type === 'folder') {
+        return res.status(400).json({ error: "A folder doesn't have content" });
+      }
+
+      if (!fileDocument.localPath) return res.status(404).json({ error: 'Not found' });
+
+      try {
+        const fileContent = await fs.promises.readFile(fileDocument.localPath);
+        const mimeType = mime.lookup(fileDocument.name) || 'application/octet-stream';
+        res.setHeader('Content-Type', mimeType);
+        return res.status(200).send(fileContent);
+      } catch (error) {
+        console.error(error);
+        return res.status(404).json({ error: 'Not found' });
+      }
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+    
+}
+
 
 export default FilesController;
