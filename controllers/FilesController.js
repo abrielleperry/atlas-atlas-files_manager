@@ -53,7 +53,6 @@ class FilesController {
       parentId,
     };
 
-    // Handle folder creation
     if (type === 'folder') {
       const result = await dbClient.db.collection('files').insertOne(fileDocument);
       const newFile = result.ops[0];
