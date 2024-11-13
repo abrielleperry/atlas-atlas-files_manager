@@ -1,8 +1,9 @@
 import Queue from 'bull';
-import dbClient from './utils/db';
 import fs from 'fs';
 import path from 'path';
 import imageThumbnail from 'image-thumbnail';
+import { ObjectId } from 'mongodb';
+import dbClient from './utils/db';
 
 const fileQueue = new Queue('fileQueue');
 
@@ -23,27 +24,22 @@ fileQueue.process(async (job, done) => {
     for (const width of thumbnailSizes) {
       const thumbnail = await imageThumbnail(file.localPath, { width });
       const thumbnailPath = path.join(file.localPath, `${fileId}_${width}.png`);
-      
-      // Ensure the directory exists
+
       const outputDir = path.dirname(thumbnailPath);
       if (!fs.existsSync(outputDir)) {
         fs.mkdirSync(outputDir, { recursive: true });
       }
 
-      // Write the thumbnail
       fs.writeFileSync(thumbnailPath, thumbnail);
       thumbnails[width] = thumbnailPath;
 
       console.log(`Generated thumbnail for width: ${width}`);
     }
 
-    // Update database with thumbnails paths
     await dbClient.db.collection('files').updateOne(
       { _id: ObjectId(fileId) },
-      { $set: { thumbnails } }
+      { $set: { thumbnails } },
     );
-
-    done();
   } catch (error) {
     console.error('Error generating thumbnails:', error);
     done(error);

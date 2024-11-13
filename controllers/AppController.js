@@ -16,7 +16,6 @@ router.get('/status', async (req, res) => {
   }
 });
 
-// GET /stats endpoint
 router.get('/stats', async (req, res) => {
   try {
     const usersCount = await dbClient.nbUsers();
@@ -29,5 +28,4 @@ router.get('/stats', async (req, res) => {
   }
 });
 
-// Export the router
 export default router;
