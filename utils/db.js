@@ -1,5 +1,3 @@
-// utils/db.js
-
 import { MongoClient } from 'mongodb';
 import dotenv from 'dotenv';
 
@@ -14,11 +12,10 @@ class DBClient {
 
     this.client = new MongoClient(url, { useUnifiedTopology: true });
 
-    // Connect to the database and initialize it
     this.client.connect()
       .then(() => {
         console.log('Connected to MongoDB');
-        this.db = this.client.db(database); // Initialize the db property here
+        this.db = this.client.db(database);
       })
       .catch((err) => {
         console.error('Failed to connect to MongoDB:', err);
