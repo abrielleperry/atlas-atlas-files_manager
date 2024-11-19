@@ -116,6 +116,11 @@ Once set up, explore the platform by logging in and testing the various endpoint
 
 
 ## Authors
+ Franklin Blation
+  - <a href="mailto:Frankblation@gmail.com">Email</a>
+ - [LinkedIn](www.linkedin.com/in/frankblation)
+  - [GitHub](https://github.com/Frankblation)
+ 
  Abrielle Perry
 
  - <a href="mailto:abrielleperry22@icloud.com">Email</a>
