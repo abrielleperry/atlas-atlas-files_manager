@@ -1,0 +1,940 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Atlas Files Manager API",
+    "description": "API documentation for the Atlas Files Manager application",
+    "version": "1.0.0",
+    "contact": {
+      "name": "API Support",
+      "url": "https://github.com/abrielleperry/atlas-atlas-files_manager"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000",
+      "description": "Development server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Authentication",
+      "description": "User authentication operations"
+    },
+    {
+      "name": "Users",
+      "description": "User management operations"
+    },
+    {
+      "name": "Files",
+      "description": "File management operations"
+    }
+  ],
+  "paths": {
+    "/status": {
+      "get": {
+        "summary": "Get API status",
+        "description": "Returns the status of the API",
+        "tags": ["Status"],
+        "responses": {
+          "200": {
+            "description": "API is running",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "OK"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users": {
+      "post": {
+        "summary": "Create a new user",
+        "description": "Creates a new user with the provided email and password",
+        "tags": ["Users"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "user@example.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password",
+                    "example": "password123"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "5f1e7cda04a394508232559d"
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "user@example.com"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing email or password",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Missing email or password"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Email already exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Email already exists"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/me": {
+      "get": {
+        "summary": "Get current user",
+        "description": "Returns information about the authenticated user",
+        "tags": ["Users"],
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User information retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "5f1e7cda04a394508232559d"
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "user@example.com"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/connect": {
+      "get": {
+        "summary": "Sign in",
+        "description": "Authenticates a user and returns a token",
+        "tags": ["Authentication"],
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User authenticated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string",
+                      "example": "f21fb953-16f9-46ed-8d9c-84c6450ec80f"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/disconnect": {
+      "get": {
+        "summary": "Sign out",
+        "description": "Disconnects a user by invalidating their token",
+        "tags": ["Authentication"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "User disconnected successfully"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/files": {
+      "post": {
+        "summary": "Upload a file",
+        "description": "Uploads a new file to the server",
+        "tags": ["Files"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name", "type"],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "myFile.txt"
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": ["folder", "file", "image"],
+                    "example": "file"
+                  },
+                  "parentId": {
+                    "type": "string",
+                    "example": "5f1e881cc7ba06511e683b23"
+                  },
+                  "isPublic": {
+                    "type": "boolean",
+                    "example": false
+                  },
+                  "data": {
+                    "type": "string",
+                    "format": "base64",
+                    "example": "SGVsbG8gV29ybGQ="
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "File created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "5f1e8896c7ba06511e683b25"
+                    },
+                    "userId": {
+                      "type": "string",
+                      "example": "5f1e7cda04a394508232559d"
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "myFile.txt"
+                    },
+                    "type": {
+                      "type": "string",
+                      "example": "file"
+                    },
+                    "isPublic": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "parentId": {
+                      "type": "string",
+                      "example": "5f1e881cc7ba06511e683b23"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Missing name"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get files",
+        "description": "Returns a list of files for the authenticated user",
+        "tags": ["Files"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "parentId",
+            "in": "query",
+            "description": "ID of the parent folder",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number for pagination",
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of files retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "example": "5f1e8896c7ba06511e683b25"
+                      },
+                      "userId": {
+                        "type": "string",
+                        "example": "5f1e7cda04a394508232559d"
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "myFile.txt"
+                      },
+                      "type": {
+                        "type": "string",
+                        "example": "file"
+                      },
+                      "isPublic": {
+                        "type": "boolean",
+                        "example": false
+                      },
+                      "parentId": {
+                        "type": "string",
+                        "example": "5f1e881cc7ba06511e683b23"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/files/{id}": {
+      "get": {
+        "summary": "Get file by ID",
+        "description": "Returns information about a specific file",
+        "tags": ["Files"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the file to retrieve",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File information retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "5f1e8896c7ba06511e683b25"
+                    },
+                    "userId": {
+                      "type": "string",
+                      "example": "5f1e7cda04a394508232559d"
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "myFile.txt"
+                    },
+                    "type": {
+                      "type": "string",
+                      "example": "file"
+                    },
+                    "isPublic": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "parentId": {
+                      "type": "string",
+                      "example": "5f1e881cc7ba06511e683b23"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "File not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update file",
+        "description": "Updates a file's properties",
+        "tags": ["Files"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the file to update",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "newFileName.txt"
+                  },
+                  "isPublic": {
+                    "type": "boolean",
+                    "example": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "File updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "5f1e8896c7ba06511e683b25"
+                    },
+                    "userId": {
+                      "type": "string",
+                      "example": "5f1e7cda04a394508232559d"
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "newFileName.txt"
+                    },
+                    "type": {
+                      "type": "string",
+                      "example": "file"
+                    },
+                    "isPublic": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "parentId": {
+                      "type": "string",
+                      "example": "5f1e881cc7ba06511e683b23"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "File not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/files/{id}/publish": {
+      "put": {
+        "summary": "Publish a file",
+        "description": "Makes a file public",
+        "tags": ["Files"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the file to publish",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File published successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "5f1e8896c7ba06511e683b25"
+                    },
+                    "userId": {
+                      "type": "string",
+                      "example": "5f1e7cda04a394508232559d"
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "myFile.txt"
+                    },
+                    "type": {
+                      "type": "string",
+                      "example": "file"
+                    },
+                    "isPublic": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "parentId": {
+                      "type": "string",
+                      "example": "5f1e881cc7ba06511e683b23"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "File not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/files/{id}/unpublish": {
+      "put": {
+        "summary": "Unpublish a file",
+        "description": "Makes a file private",
+        "tags": ["Files"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the file to unpublish",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File unpublished successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "5f1e8896c7ba06511e683b25"
+                    },
+                    "userId": {
+                      "type": "string",
+                      "example": "5f1e7cda04a394508232559d"
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "myFile.txt"
+                    },
+                    "type": {
+                      "type": "string",
+                      "example": "file"
+                    },
+                    "isPublic": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "parentId": {
+                      "type": "string",
+                      "example": "5f1e881cc7ba06511e683b23"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "File not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/files/{id}/data": {
+      "get": {
+        "summary": "Get file content",
+        "description": "Returns the content of a file",
+        "tags": ["Files"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the file to retrieve content from",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File content retrieved successfully",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "File not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "basicAuth": {
+        "type": "http",
+        "scheme": "basic"
+      },
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}
